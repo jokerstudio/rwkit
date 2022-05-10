@@ -1,8 +1,48 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount, useConnect, useDisconnect, useSignMessage, useContract, useSigner, useProvider } from 'wagmi'
+import { useEffect, useState } from 'react'
+import { erc721ABI, useEnsAvatar } from 'wagmi'
 
 export default function Home() {
+  const [image, setImage] = useState('')
+  const provider = useProvider()
+  const { data: account} = useAccount()
+  const contract = useContract({
+    addressOrName: '0xA5FDb0822bf82De3315f1766574547115E99016f',
+    contractInterface: erc721ABI,
+    signerOrProvider: provider,
+  })
+
+  const [message, setMessage] = useState('under the dev')
+  const { data: res, signMessage } = useSignMessage({
+    message,
+    onSuccess(data) {
+      console.log('Success', data)
+    },
+  })
+
+  useEffect(() =>   {
+    (async() => {
+      if(account?.address == null) {
+        setImage(null)
+        return
+      }
+
+      const tokenCount = await contract.balanceOf(account.address)
+      if(Number(tokenCount) < 1) return
+      const tokenId = await contract.tokenOfOwnerByIndex(account.address, 0)
+      if(tokenId == null) return
+      setMessage(tokenId.toString())
+      const meta = await contract.tokenURI(Number(tokenId))
+      const response = await fetch(meta);
+      const data = await response.json();
+      setImage(data.image)
+    })()
+  }, [contract])
+  
   return (
     <div className={styles.container}>
       <Head>
@@ -20,7 +60,16 @@ export default function Home() {
           Get started by editing{' '}
           <code className={styles.code}>pages/index.js</code>
         </p>
-
+        <br/>
+        <ConnectButton accountStatus="address"/>
+        <br/>
+        <div>
+          {image ? <Image className="rounded-full" alt="MetaWarden" src={image}layout="intrinsic" width={200} height={200} /> : <></>}
+        </div>
+        <br/>
+        <button onClick={() => signMessage()} type="button" className="text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">
+          Sign
+        </button>
         <div className={styles.grid}>
           <a href="https://nextjs.org/docs" className={styles.card}>
             <h2>Documentation &rarr;</h2>
