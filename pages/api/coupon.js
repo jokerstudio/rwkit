@@ -1,8 +1,15 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { ethers, utils } from 'ethers'
 
 export default function handler(req, res) {
     if (req.method === 'POST') {
-        // Process a POST request
+        const signerAddress = ethers.utils.verifyMessage(req.body.tokenId, req.body.sig)
+        if (signerAddress == req.body.address) {
+            res.status(200).json(signerAddress)
+        }
+        else 
+        {
+            res.status(401).json("Unauthorize")
+        }
     } else {
         // Handle any other HTTP method
     }
