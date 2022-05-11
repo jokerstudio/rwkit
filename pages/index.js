@@ -24,7 +24,7 @@ export default function Home() {
     onSuccess(data) {
       (async() => {
         const res = await axios.post(
-          "http://localhost:3000/api/coupon",
+          "/api/coupon",
           {
             address: account?.address,
             tokenId: '1033',
