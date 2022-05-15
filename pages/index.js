@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useConnect, useDisconnect, useSignMessage, useContract, useSigner, useProvider } from 'wagmi'
+import { useAccount, useConnect, useNetwork, useSignMessage, useContract, useSigner, useProvider, chainId } from 'wagmi'
 import { useEffect, useState } from 'react'
 import { erc721ABI, useEnsAvatar } from 'wagmi'
 import axios from 'axios'
@@ -13,6 +13,13 @@ export default function Home() {
   const [signing, setSigning] = useState(false)
   const provider = useProvider()
   const { data: account, isSuccess} = useAccount()
+  const {
+    activeChain,
+    chains,
+    pendingChainId,
+    switchNetwork,
+    isLoading,
+  } = useNetwork()
   const contract = useContract({
     addressOrName: '0xA5FDb0822bf82De3315f1766574547115E99016f',
     contractInterface: erc721ABI,
@@ -52,6 +59,11 @@ export default function Home() {
         setImage(null)
         return
       }
+      if(activeChain.id != 56) 
+      {
+        setImage(null)
+        return
+      }
       const tokenCount = await contract.balanceOf(account.address)
       if(Number(tokenCount) < 1) {
         setImage(null)
@@ -66,7 +78,7 @@ export default function Home() {
       const data = await response.json();
       setImage(data.image)
     })()
-  }, [contract, account])
+  }, [contract, account, isLoading])
   
   return (
     <div className={styles.container}>

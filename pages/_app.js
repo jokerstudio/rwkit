@@ -43,7 +43,7 @@ const { provider, chains } = configureChains(
       iconUrl: 'https://user-images.githubusercontent.com/12424618/54043975-b6cdb800-4182-11e9-83bd-0cd2eb757c6e.png',
       iconBackground: 'black',
     },
-    // chain.polygon,
+    chain.mainnet,
   ],
   [apiProvider.jsonRpc(chain => ({ rpcUrl: chain.rpcUrls.default }))]
 );
