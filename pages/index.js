@@ -9,9 +9,10 @@ import axios from 'axios'
 
 export default function Home() {
   const [image, setImage] = useState('')
+  const [tokenId, setTokenId] = useState('')
   const [signing, setSigning] = useState(false)
   const provider = useProvider()
-  const { data: account} = useAccount()
+  const { data: account, isSuccess} = useAccount()
   const contract = useContract({
     addressOrName: '0xA5FDb0822bf82De3315f1766574547115E99016f',
     contractInterface: erc721ABI,
@@ -27,7 +28,7 @@ export default function Home() {
           "/api/coupon",
           {
             address: account?.address,
-            tokenId: '1033',
+            tokenId: tokenId,
             sig: data,
           },
           {
@@ -40,6 +41,9 @@ export default function Home() {
         console.log(res.data)
       })()
     },
+    onError(error){
+      setSigning(false)
+    },
   })
 
   useEffect(() =>   {
@@ -48,18 +52,21 @@ export default function Home() {
         setImage(null)
         return
       }
-      
       const tokenCount = await contract.balanceOf(account.address)
-      if(Number(tokenCount) < 1) return
+      if(Number(tokenCount) < 1) {
+        setImage(null)
+        return
+      }
       const tokenId = await contract.tokenOfOwnerByIndex(account.address, 0)
       if(tokenId == null) return
+      setTokenId(tokenId.toString())
       setMessage(tokenId.toString())
       const meta = await contract.tokenURI(Number(tokenId))
       const response = await fetch(meta);
       const data = await response.json();
       setImage(data.image)
     })()
-  }, [contract])
+  }, [contract, account])
   
   return (
     <div className={styles.container}>
@@ -70,14 +77,9 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+        <h2 className={styles.title}>
+          UNDER THE DEV X Meta Warden
+        </h2>
         <br/>
         <ConnectButton accountStatus="address"/>
         <br/>
@@ -99,39 +101,10 @@ export default function Home() {
               Waiting...
               </>
             ) :
-              <>Sign</>
+              <>Claim Coupon</>
             }
           </button>
         }
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
       </main>
 
       <footer className={styles.footer}>
