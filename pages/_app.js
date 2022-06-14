@@ -2,17 +2,20 @@ import '../styles/globals.css'
 import '@rainbow-me/rainbowkit/styles.css';
 
 import {
-  apiProvider,
-  configureChains,
   RainbowKitProvider,
   getDefaultWallets,
   connectorsForWallets,
   darkTheme,
   lightTheme,
-  midnightTheme,
   wallet
 } from '@rainbow-me/rainbowkit';
-import { createClient, chain, WagmiProvider } from 'wagmi';
+import { 
+  createClient, 
+  chain, 
+  configureChains, 
+  WagmiConfig
+} from 'wagmi';
+import { publicProvider } from 'wagmi/providers/public';
 
 const customChains = {
   binance: {
@@ -45,7 +48,7 @@ const { provider, chains } = configureChains(
     },
     chain.mainnet,
   ],
-  [apiProvider.jsonRpc(chain => ({ rpcUrl: chain.rpcUrls.default }))]
+  [publicProvider()]
 );
 
 const { wallets } = getDefaultWallets({
@@ -71,7 +74,7 @@ const wagmiClient = createClient({
 
 function MyApp({ Component, pageProps }) {
   return(
-    <WagmiProvider client={wagmiClient}>
+    <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains} showRecentTransactions={true} 
       theme={{
         lightMode: lightTheme(),
@@ -83,7 +86,7 @@ function MyApp({ Component, pageProps }) {
       >
         <Component {...pageProps} />
       </RainbowKitProvider>
-    </WagmiProvider>
+    </WagmiConfig>
   )
 }
 
