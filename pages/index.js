@@ -12,9 +12,9 @@ export default function Home() {
   const [tokenId, setTokenId] = useState('')
   const [signing, setSigning] = useState(false)
   const provider = useProvider()
-  const { data: account, isSuccess} = useAccount()
+  const { address, isSuccess} = useAccount()
   const {
-    activeChain,
+    chain,
     chains,
     pendingChainId,
     switchNetwork,
@@ -34,7 +34,7 @@ export default function Home() {
         const res = await axios.post(
           "/api/coupon",
           {
-            address: account?.address,
+            address: address,
             tokenId: tokenId,
             sig: data,
           },
@@ -55,21 +55,21 @@ export default function Home() {
 
   useEffect(() =>   {
     (async() => {
-      if(account?.address == null) {
+      if(address == null) {
         setImage(null)
         return
       }
-      if(activeChain.id != 56) 
+      if(chain.id != 56) 
       {
         setImage(null)
         return
       }
-      const tokenCount = await contract.balanceOf(account.address)
+      const tokenCount = await contract.balanceOf(address)
       if(Number(tokenCount) < 1) {
         setImage(null)
         return
       }
-      const tokenId = await contract.tokenOfOwnerByIndex(account.address, 0)
+      const tokenId = await contract.tokenOfOwnerByIndex(address, 0)
       if(tokenId == null) return
       setTokenId(tokenId.toString())
       setMessage(tokenId.toString())
@@ -78,7 +78,7 @@ export default function Home() {
       const data = await response.json();
       setImage(data.image)
     })()
-  }, [contract, account, isLoading])
+  }, [contract, address, isLoading])
   
   return (
     <div className={styles.container}>
