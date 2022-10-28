@@ -93,7 +93,7 @@ const Home: NextPage = () => {
         <br/>
         <div>
           { !image ? null :
-            <Image className="rounded-full" alt="MetaWarden" src={image}layout="intrinsic" width={200} height={200} />
+            <Image className="rounded-full" alt="MetaWarden" src={image} width={200} height={200} />
           }
         </div>
         <br/>

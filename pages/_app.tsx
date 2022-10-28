@@ -13,34 +13,36 @@ import {
   createClient, 
   chain, 
   configureChains, 
-  WagmiConfig
+  WagmiConfig,
+  Chain
 } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import {
   ledgerWallet
 } from '@rainbow-me/rainbowkit/wallets';
-
+const binance : Chain = {
+  id: 56,
+  name: 'Smart Chain',
+  nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+  rpcUrls: {
+    default: `https://bsc-dataseed.binance.org`,
+  },
+  blockExplorers: {
+    etherscan: {
+      name: 'Etherscan',
+      url: 'https://bscscan.com',
+    },
+    default: {
+      name: 'Etherscan',
+      url: 'https://bscscan.com',
+    },
+  },
+  testnet: false,
+  network: 'Smart Chain'
+}
 const customChains = {
-  binance: {
-    id: 56,
-    name: 'Smart Chain',
-    nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
-    rpcUrls: {
-      default: `https://bsc-dataseed.binance.org`,
-    },
-    blockExplorers: {
-      etherscan: {
-        name: 'Etherscan',
-        url: 'https://bscscan.com',
-      },
-      default: {
-        name: 'Etherscan',
-        url: 'https://bscscan.com',
-      },
-    },
-    testnet: false,
-  }
+  binance: binance
 }
 
 const { provider, chains } = configureChains(
