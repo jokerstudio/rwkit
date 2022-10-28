@@ -6,8 +6,7 @@ import {
   getDefaultWallets,
   connectorsForWallets,
   darkTheme,
-  lightTheme,
-  wallet
+  lightTheme
 } from '@rainbow-me/rainbowkit';
 import { 
   createClient, 
@@ -16,6 +15,9 @@ import {
   WagmiConfig
 } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
+import {
+  ledgerWallet
+} from '@rainbow-me/rainbowkit/wallets';
 
 const customChains = {
   binance: {
@@ -61,7 +63,7 @@ const connectors = connectorsForWallets([
   {
     groupName: 'Others',
     wallets: [
-      wallet.ledger({ chains })
+      ledgerWallet({ chains })
     ],
   },
 ])

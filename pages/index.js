@@ -2,9 +2,12 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useConnect, useNetwork, useSignMessage, useContract, useSigner, useProvider, chainId } from 'wagmi'
+import { useAccount, useConnect, useNetwork, 
+  useSignMessage, useContract, useContractRead,
+  useSigner, useProvider, chainId,
+  erc721ABI } from 'wagmi'
+import legacyERC721ABI from '../legacyERC721ABI.json'
 import { useEffect, useState } from 'react'
-import { erc721ABI, useEnsAvatar } from 'wagmi'
 import axios from 'axios'
 
 export default function Home() {
@@ -21,9 +24,10 @@ export default function Home() {
     isLoading,
   } = useNetwork()
   const contract = useContract({
-    addressOrName: '0xA5FDb0822bf82De3315f1766574547115E99016f',
-    contractInterface: erc721ABI,
+    address: '0xA5FDb0822bf82De3315f1766574547115E99016f',
+    abi: legacyERC721ABI,
     signerOrProvider: provider,
+    chainId: 56
   })
 
   const [message, setMessage] = useState('under the dev')
@@ -64,6 +68,7 @@ export default function Home() {
         setImage(null)
         return
       }
+
       const tokenCount = await contract.balanceOf(address)
       if(Number(tokenCount) < 1) {
         setImage(null)
@@ -71,8 +76,6 @@ export default function Home() {
       }
       const tokenId = await contract.tokenOfOwnerByIndex(address, 0)
       if(tokenId == null) return
-      setTokenId(tokenId.toString())
-      setMessage(tokenId.toString())
       const meta = await contract.tokenURI(Number(tokenId))
       const response = await fetch(meta);
       const data = await response.json();
