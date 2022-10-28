@@ -2,32 +2,25 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useConnect, useNetwork, 
-  useSignMessage, useContract, useContractRead,
-  useSigner, useProvider, chainId,
-  erc721ABI } from 'wagmi'
+import { useAccount, useNetwork, useSignMessage, useContract, useProvider } from 'wagmi'
 import legacyERC721ABI from '../legacyERC721ABI.json'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import type { NextPage } from 'next'
 
-export default function Home() {
-  const [image, setImage] = useState('')
+const Home: NextPage = () => {
+  const [image, setImage] = useState<null | string>('')
   const [tokenId, setTokenId] = useState('')
   const [signing, setSigning] = useState(false)
   const provider = useProvider()
-  const { address, isSuccess} = useAccount()
+  const { address} = useAccount()
   const {
-    chain,
-    chains,
-    pendingChainId,
-    switchNetwork,
-    isLoading,
+    chain
   } = useNetwork()
   const contract = useContract({
     address: '0xA5FDb0822bf82De3315f1766574547115E99016f',
     abi: legacyERC721ABI,
-    signerOrProvider: provider,
-    chainId: 56
+    signerOrProvider: provider
   })
 
   const [message, setMessage] = useState('under the dev')
@@ -63,25 +56,25 @@ export default function Home() {
         setImage(null)
         return
       }
-      if(chain.id != 56) 
+      if(chain?.id != 56) 
       {
         setImage(null)
         return
       }
 
-      const tokenCount = await contract.balanceOf(address)
+      const tokenCount = await contract?.balanceOf(address)
       if(Number(tokenCount) < 1) {
         setImage(null)
         return
       }
-      const tokenId = await contract.tokenOfOwnerByIndex(address, 0)
+      const tokenId = await contract?.tokenOfOwnerByIndex(address, 0)
       if(tokenId == null) return
-      const meta = await contract.tokenURI(Number(tokenId))
+      const meta = await contract?.tokenURI(Number(tokenId))
       const response = await fetch(meta);
       const data = await response.json();
       setImage(data.image)
     })()
-  }, [contract, address, isLoading])
+  }, [contract, address])
   
   return (
     <div className={styles.container}>
@@ -96,7 +89,7 @@ export default function Home() {
           UNDER THE DEV X Meta Warden
         </h2>
         <br/>
-        <ConnectButton accountStatus="address"/>
+        <ConnectButton accountStatus="address" />
         <br/>
         <div>
           { !image ? null :
@@ -137,3 +130,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default Home

@@ -1,6 +1,14 @@
 import { ethers, utils } from 'ethers'
+import type { NextApiRequest, NextApiResponse } from 'next'
 
-export default function handler(req, res) {
+type Data = {
+    tokenId: string,
+    sig: string
+}
+
+export default function handler( 
+    req: NextApiRequest,
+    res: NextApiResponse) {
     if (req.method === 'POST') {
         const signerAddress = ethers.utils.verifyMessage(req.body.tokenId, req.body.sig)
         if (signerAddress == req.body.address) {

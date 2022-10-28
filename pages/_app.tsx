@@ -1,5 +1,6 @@
 import '../styles/globals.css'
 import '@rainbow-me/rainbowkit/styles.css';
+import type { AppProps } from 'next/app'
 
 import {
   RainbowKitProvider,
@@ -15,6 +16,7 @@ import {
   WagmiConfig
 } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
+import { alchemyProvider } from 'wagmi/providers/alchemy'
 import {
   ledgerWallet
 } from '@rainbow-me/rainbowkit/wallets';
@@ -74,7 +76,7 @@ const wagmiClient = createClient({
   provider,
 });
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: AppProps) {
   return(
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains} showRecentTransactions={true} 
