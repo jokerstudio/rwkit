@@ -10,8 +10,7 @@ import {
   lightTheme
 } from '@rainbow-me/rainbowkit';
 import { 
-  createClient, 
-  chain, 
+  createClient,
   configureChains, 
   WagmiConfig,
   Chain
@@ -26,7 +25,9 @@ const binance : Chain = {
   name: 'Smart Chain',
   nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
   rpcUrls: {
-    default: `https://bsc-dataseed.binance.org`,
+    default: {
+      http: ['https://bsc-dataseed.binance.org']
+    },
   },
   blockExplorers: {
     etherscan: {
@@ -52,7 +53,6 @@ const { provider, chains } = configureChains(
       iconUrl: 'https://user-images.githubusercontent.com/12424618/54043975-b6cdb800-4182-11e9-83bd-0cd2eb757c6e.png',
       iconBackground: 'black',
     },
-    chain.mainnet,
   ],
   [publicProvider()]
 );
