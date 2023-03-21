@@ -20,14 +20,14 @@ import { alchemyProvider } from 'wagmi/providers/alchemy'
 import {
   ledgerWallet
 } from '@rainbow-me/rainbowkit/wallets';
+
 const binance : Chain = {
   id: 56,
   name: 'Smart Chain',
   nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
   rpcUrls: {
-    default: {
-      http: ['https://bsc-dataseed.binance.org']
-    },
+    public: {http: ['https://bsc-dataseed.binance.org']},
+    default: {http: ['https://bsc-dataseed.binance.org']},
   },
   blockExplorers: {
     etherscan: {
