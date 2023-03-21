@@ -10,7 +10,6 @@ import type { NextPage } from 'next'
 
 const Home: NextPage = () => {
   const [image, setImage] = useState<null | string>('')
-  const [tokenId, setTokenId] = useState('')
   const [signing, setSigning] = useState(false)
   const provider = useProvider()
   const { address} = useAccount()
@@ -32,7 +31,7 @@ const Home: NextPage = () => {
           "/api/coupon",
           {
             address: address,
-            tokenId: tokenId,
+            message: message,
             sig: data,
           },
           {
@@ -47,6 +46,7 @@ const Home: NextPage = () => {
     },
     onError(error){
       setSigning(false)
+      console.log(error)
     },
   })
 
@@ -69,6 +69,7 @@ const Home: NextPage = () => {
       }
       const tokenId = await contract?.tokenOfOwnerByIndex(address, 0)
       if(tokenId == null) return
+      setMessage(Number(tokenId).toString())
       const meta = await contract?.tokenURI(Number(tokenId))
       const response = await fetch(meta);
       const data = await response.json();

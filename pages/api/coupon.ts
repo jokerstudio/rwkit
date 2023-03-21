@@ -10,7 +10,7 @@ export default function handler(
     req: NextApiRequest,
     res: NextApiResponse) {
     if (req.method === 'POST') {
-        const signerAddress = ethers.utils.verifyMessage(req.body.tokenId, req.body.sig)
+        const signerAddress = ethers.utils.verifyMessage(req.body.message, req.body.sig)
         if (signerAddress == req.body.address) {
             res.status(200).json(signerAddress)
         }
