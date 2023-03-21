@@ -10,6 +10,7 @@ import type { NextPage } from 'next'
 
 const Home: NextPage = () => {
   const [image, setImage] = useState<null | string>('')
+  const [signerAddr, setSignerAddr] = useState<null | string>('')
   const [signing, setSigning] = useState(false)
   const provider = useProvider()
   const { address} = useAccount()
@@ -41,7 +42,7 @@ const Home: NextPage = () => {
           },
         )
         setSigning(false)
-        console.log(res.data)
+        setSignerAddr(res.data)
       })()
     },
     onError(error){
@@ -114,6 +115,7 @@ const Home: NextPage = () => {
             }
           </button>
         }
+        <h3>{signerAddr}</h3>
       </main>
 
       <footer className={styles.footer}>
