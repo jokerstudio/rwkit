@@ -10,7 +10,7 @@ import {
   lightTheme
 } from '@rainbow-me/rainbowkit';
 import { 
-  createClient,
+  createConfig,
   configureChains, 
   WagmiConfig,
   Chain
@@ -20,6 +20,8 @@ import { alchemyProvider } from 'wagmi/providers/alchemy'
 import {
   ledgerWallet
 } from '@rainbow-me/rainbowkit/wallets';
+
+const walletConnectProjectId = "9945793581663233f7c9c4d6da12b24c"
 
 const binance : Chain = {
   id: 56,
@@ -46,7 +48,7 @@ const customChains = {
   binance: binance
 }
 
-const { provider, chains } = configureChains(
+const { publicClient, chains } = configureChains(
   [
     {
       ...customChains.binance,
@@ -60,6 +62,7 @@ const { provider, chains } = configureChains(
 const { wallets } = getDefaultWallets({
   appName: 'UNDER THE DEV',
   chains,
+  projectId: walletConnectProjectId
 });
 
 const connectors = connectorsForWallets([
@@ -67,20 +70,20 @@ const connectors = connectorsForWallets([
   {
     groupName: 'Others',
     wallets: [
-      ledgerWallet({ chains })
+      ledgerWallet({ chains, projectId: walletConnectProjectId })
     ],
   },
 ])
 
-const wagmiClient = createClient({
+const wagmiClient = createConfig({
   autoConnect: true,
   connectors,
-  provider,
+  publicClient,
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
   return(
-    <WagmiConfig client={wagmiClient}>
+    <WagmiConfig config={wagmiClient}>
       <RainbowKitProvider chains={chains} showRecentTransactions={true} 
       theme={{
         lightMode: lightTheme(),

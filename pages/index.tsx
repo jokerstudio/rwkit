@@ -2,26 +2,25 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useNetwork, useSignMessage, useContract, useProvider } from 'wagmi'
+import { useAccount, useNetwork, useSignMessage, usePublicClient, useContractWrite, useContractRead, usePrepareContractWrite } from 'wagmi'
+import { readContract } from '@wagmi/core'
 import legacyERC721ABI from '../legacyERC721ABI.json'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import type { NextPage } from 'next'
 
 const Home: NextPage = () => {
+
+  const contractAddress = '0xA5FDb0822bf82De3315f1766574547115E99016f'
+
   const [image, setImage] = useState<null | string>('')
   const [signerAddr, setSignerAddr] = useState<null | string>('')
   const [signing, setSigning] = useState(false)
-  const provider = useProvider()
+  const provider = usePublicClient()
   const { address} = useAccount()
   const {
     chain
   } = useNetwork()
-  const contract = useContract({
-    address: '0xA5FDb0822bf82De3315f1766574547115E99016f',
-    abi: legacyERC721ABI,
-    signerOrProvider: provider
-  })
 
   const [message, setMessage] = useState('under the dev')
   const { data: res, signMessage } = useSignMessage({
@@ -63,20 +62,37 @@ const Home: NextPage = () => {
         return
       }
 
-      const tokenCount = await contract?.balanceOf(address)
+      const tokenCount = await readContract({
+        address: contractAddress,
+        abi: legacyERC721ABI,
+        functionName: 'balanceOf',
+        args: [address]
+      })
       if(Number(tokenCount) < 1) {
         setImage(null)
         return
       }
-      const tokenId = await contract?.tokenOfOwnerByIndex(address, 0)
+
+      const tokenId = await readContract({
+        address: contractAddress,
+        abi: legacyERC721ABI,
+        functionName: 'tokenOfOwnerByIndex',
+        args: [address, 0]
+      })
+
       if(tokenId == null) return
       setMessage(Number(tokenId).toString())
-      const meta = await contract?.tokenURI(Number(tokenId))
-      const response = await fetch(meta);
+      const meta = await readContract({
+        address: contractAddress,
+        abi: legacyERC721ABI,
+        functionName: 'tokenURI',
+        args: [Number(tokenId)]
+      })
+      const response = await fetch(meta+"");
       const data = await response.json();
       setImage(data.image)
     })()
-  }, [contract, address])
+  }, [provider, address])
   
   return (
     <div className={styles.container}>
